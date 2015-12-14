@@ -3,7 +3,6 @@
 import time
 import multiprocessing
 import logging
-logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 
 closed = 0
@@ -42,7 +41,7 @@ if __name__ == '__main__':
         print "Host %s is up, start scanning" % ip
         results = [pool.apply_async(scan, (port,)) for port in ports]
         for result in filter(lambda i : i.get() != None, results):
-            closed += result.get()[0]
+            closed += result.get()
         duration = time.time()-start_time
         print "%s Scan Completed in %fs" % (ip, duration)
         print "%d closed ports in %d total port scanned" % (closed, len(ports))
