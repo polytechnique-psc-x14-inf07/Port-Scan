@@ -25,6 +25,7 @@ class Scanner(threading.Thread):
         if str(type(resp)) == "<type 'NoneType'>":
             with lock:
                 closed += 1
+                #print "[*] %d closed" % port
         elif resp.haslayer(TCP):
             if resp.getlayer(TCP).flags == 0x12:
                 send_rst = sr(IP(dst=ip)/TCP(sport=src_port, dport=port, flags='AR'), timeout=1)
@@ -33,6 +34,7 @@ class Scanner(threading.Thread):
             elif resp.getlayer(TCP).flags == 0x14:
                 with lock:
                     closed += 1
+                 #   print "[*] %d closed" % port
         self.queue.task_done()
  
 def is_up(ip):
@@ -44,10 +46,12 @@ def is_up(ip):
         return True
  
 if __name__ == '__main__':
-    ip = raw_input ("IP to scan :")
+    ip = sys.argv[1]
+    bport = int(sys.argv[2])
+    eport = int(sys.argv[3])
     conf.verb = 0
     start_time = time.time()
-    ports = range(1, 1024)
+    ports = range(bport, eport)
     lock = threading.Lock()
     queue = Queue.Queue()
     if is_up(ip):

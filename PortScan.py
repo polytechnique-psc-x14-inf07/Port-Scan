@@ -15,12 +15,14 @@ def scan(port):
     resp = sr1(p, timeout=2)
     if str(type(resp)) == "<type 'NoneType'>":
         closed += 1
+        #print "[*] %d closed" % port
     elif resp.haslayer(TCP):
         if resp.getlayer(TCP).flags == 0x12:
             send_rst = sr(IP(dst=ip)/TCP(sport=src_port, dport=port, flags='AR'), timeout=1)
             print "[*] %d open" % port
         elif resp.getlayer(TCP).flags == 0x14:
             closed += 1
+            #print "[*] %d closed" % port
     return closed
 
 def is_up(ip):
@@ -32,10 +34,12 @@ def is_up(ip):
         return True
 
 if __name__ == '__main__':
-    ip = raw_input ("IP to scan :")
+    ip = sys.argv[1]
+    bport = sys.argv[2]
+    eport = sys.argv[3]
     conf.verb = 0
     start_time = time.time()
-    ports = range(1, 1024)
+    ports = range(bport, eport)
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()*10)
     if is_up(ip):
         print "Host %s is up, start scanning" % ip
